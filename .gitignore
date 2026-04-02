@@ -1,0 +1,11 @@
+# Security
+.env
+__pycache__/
+*.py[cod]
+
+# Environments
+venv/
+env/
+
+# Streamlit
+.streamlit/config.toml

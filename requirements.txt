@@ -1,0 +1,22 @@
+# Core App Dependencies
+streamlit
+groq
+python-dotenv
+
+# Data Science & Visualization
+numpy
+pandas
+matplotlib
+seaborn
+plotly
+scipy
+
+# Machine Learning Essentials
+scikit-learn
+
+# Web Scraping & APIs
+requests
+beautifulsoup4
+
+# Specialized Calculations
+sympy
