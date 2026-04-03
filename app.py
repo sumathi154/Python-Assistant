@@ -46,6 +46,10 @@ def reset_all_content():
 # --- ENHANCED: AI EVALUATION SYSTEM (LLM-AS-JUDGE) ---
 def evaluate_response(query, response):
     """Method 4: LLM-as-Judge implementation"""
+    # If the response is the "Off-topic" message, we don't need a formal audit
+    if "only answer queries related to Python" in response:
+        return "N/A: Query was identified as off-topic."
+        
     try:
         eval_chat = client.chat.completions.create(
             messages=[
@@ -63,10 +67,19 @@ def process_explanation():
     if query:
         with st.spinner("Analyzing with AI..."):
             try:
-                # Primary AI Generation
+                # Primary AI Generation with Strict Guardrails
                 chat = client.chat.completions.create(
                     messages=[
-                        {"role": "system", "content": "You are an expert Python tutor."},
+                        {
+                            "role": "system", 
+                            "content": (
+                                "You are an expert Python tutor. Your primary rule is to ONLY answer "
+                                "queries related to Python programming, libraries (like Pandas, NumPy, etc.), "
+                                "and software development concepts involving Python. "
+                                "If a user asks about anything else (e.g., biology, general history, cooking, trees), "
+                                "politely inform them that you can only assist with Python-related questions."
+                            )
+                        },
                         {"role": "user", "content": query}
                     ],
                     model="llama-3.3-70b-versatile",
@@ -108,40 +121,22 @@ with st.sidebar:
     st.title("🚀 PyGuide Navigator")
     
     with st.expander("🤖 AI & Machine Learning"):
-
         st.write("**Tech:** TensorFlow, PyTorch, Scikit-Learn")
 
-       
-
     with st.expander("📊 Data Science & Analysis"):
-
         st.write("**Tech:** Pandas, NumPy, Seaborn, Matplotlib")
 
-
-
     with st.expander("🏗️ Data Engineering"):
-
         st.write("**Tech:** PySpark, Airflow, SQL, Kafka")
 
-
-
     with st.expander("🌐 Web Development"):
-
         st.write("**Tech:** Django, Flask, FastAPI, Jinja2")
 
-
-
     with st.expander("⚙️ Automation & DevOps"):
-
         st.write("**Tech:** Selenium, Docker, Ansible, PyTest")
 
-
-
     with st.expander("🛡️ Cybersecurity"):
-
         st.write("**Tech:** Scapy, Requests, Cryptography")
-
-
 
     st.markdown("---")
     st.header("📚 Python Essentials")
@@ -168,7 +163,6 @@ with st.sidebar:
 
     st.markdown("---")
 
-    
     st.subheader("📁 Upload Script")
     uploaded_file = st.file_uploader("Upload a .py file", type=["py"])
     if uploaded_file:
@@ -207,7 +201,6 @@ if st.session_state.ai_response:
         st.subheader("💡 AI Explanation")
         st.markdown(st.session_state.ai_response)
         
-        # --- METHOD 2: HUMAN-GUIDED EVALUATION ---
         st.write("---")
         st.write("**Rate this explanation:**")
         c1, c2, c3 = st.columns([1, 1, 8])
@@ -215,7 +208,6 @@ if st.session_state.ai_response:
         if c2.button("👎"): st.toast("We'll work to improve the response.")
 
     with col2:
-        # --- METHOD 4: LLM-AS-JUDGE DISPLAY ---
         st.subheader("⚖️ AI Quality Audit")
         st.info(st.session_state.ai_eval)
 
@@ -248,7 +240,6 @@ if st.button("▶️ Run Code"):
         
         execution_time = end_time - start_time
         
-        # --- METHOD 3: AUTOMATED METRICS ---
         st.subheader("📊 Performance Analytics")
         m1, m2 = st.columns(2)
         m1.metric("Execution Time", f"{execution_time:.4f}s")
